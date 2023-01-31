@@ -9,8 +9,11 @@
 <script type="module">
 import { getCreatorLength, getCreator } from "./creators.js";
 
+const maketextimg = false; // if true, run with make_textimg_server.js
+
 const len = getCreatorLength();
 console.log(len);
+const plates = [];
 for (let i = 0; i < len; i++) {
   /*
   const x = Math.random() * 10 - 5;
@@ -24,9 +27,27 @@ for (let i = 0; i < len; i++) {
   const x = Math.cos(th) * r;
   const z = Math.sin(th) * r;
   const rot = -th / Math.PI * 180 - 90;
-  const p = await getCreator(i, x, y, z, 0, rot, 0, scene);
-  //break;
+  const p = await getCreator(i, x, y, z, 0, rot, 0, scene, maketextimg);
+  plates.push(p);
+  p.th = th;
 }
+setInterval(() => {
+  for (let i = 0; i < plates.length; i++) {
+    const p = plates[i];
+    const ny = i % 4;
+    p.th += 0.0005 * (ny - 1.5);
+    const r = 4;
+    const y = 1.5 + ny * .8;
+    const th = p.th;
+    const x = Math.cos(th) * r;
+    const z = Math.sin(th) * r;
+    const rot = -th / Math.PI * 180 - 90;
+    p[0].setAttribute("position", { x, y, z });
+    p[1].setAttribute("position", { x, y, z });
+    p[0].setAttribute("rotation", { x: 0, y: rot, z: 0 });
+    p[1].setAttribute("rotation", { x: 0, y: rot + 180, z: 0 });
+  }
+}, 1000 / 60);
 </script>
 </body>
 </html>

@@ -3,6 +3,7 @@ import { CSV } from "https://js.sabae.cc/CSV.js";
 import { html2image } from "https://taisukef.github.io/html2canvas/es/html2image.js";
 import { Canvas } from "https://code4fukui.github.io/Canvas/Canvas.js";
 import { Base64 } from "https://js.sabae.cc/Base64.js";
+import { fetchJSON } from "https://js.sabae.cc/fetchJSON.js";
 
 const w = 1;
 const h = 533 / 800;
@@ -15,28 +16,7 @@ console.log(data);
 
 export const getCreatorLength = () => data.length;
 
-export const getCreator = async (idx, x, y, z, rx, ry, rz, parent) => {
-  const d = data[idx];
-  const plane = create("a-plane", parent);
-  plane.setAttribute("position", { x, y, z });
-  plane.setAttribute("rotation", { x: rx, y: ry, z: rz });
-  plane.setAttribute("width", w);
-  plane.setAttribute("height", h);
-  plane.setAttribute("src", d.メイン写真);
-  plane.data = d;
-
-  const scale = 0.8;
-  plane.setAttribute("scale", { x: scale, y: scale, z: scale });
-
-  const plane2 = create("a-plane", parent);
-  plane2.setAttribute("position", { x, y, z });
-  plane2.setAttribute("rotation", { x: rx, y: ry + 180 * 1, z: rz });
-  plane2.setAttribute("width", w);
-  plane2.setAttribute("height", h);
-  plane2.setAttribute("scale", { x: scale, y: scale, z: scale });
-  //plane2.setAttribute("src", d.メイン写真);
-
-
+export const getImage = async (d) => {
   const div = document.createElement("div");
   div.style.width = "800px";
   div.style.height = "533px";
@@ -59,9 +39,39 @@ export const getCreator = async (idx, x, y, z, rx, ry, rz, parent) => {
   const img = await html2image(div);
   //console.log(img);
   const png = Canvas.encodePNG(img);
-  const dimg = "data:image/png;base64," + Base64.encode(png);
-  //console.log(dimg);
-  plane2.setAttribute("src", dimg);
-  
-  return plane;
+  return png;
+};
+
+export const getCreator = async (idx, x, y, z, rx, ry, rz, parent, maketext) => {
+  const d = data[idx];
+  const plane = create("a-plane", parent);
+  plane.setAttribute("position", { x, y, z });
+  plane.setAttribute("rotation", { x: rx, y: ry, z: rz });
+  plane.setAttribute("width", w);
+  plane.setAttribute("height", h);
+  plane.setAttribute("src", d.メイン写真);
+  plane.data = d;
+
+  const scale = 0.8;
+  plane.setAttribute("scale", { x: scale, y: scale, z: scale });
+
+  const plane2 = create("a-plane", parent);
+  plane2.setAttribute("position", { x, y, z });
+  plane2.setAttribute("rotation", { x: rx, y: ry + 180, z: rz });
+  plane2.setAttribute("width", w);
+  plane2.setAttribute("height", h);
+  plane2.setAttribute("scale", { x: scale, y: scale, z: scale });
+  //plane2.setAttribute("src", d.メイン写真);
+
+  if (maketext) {
+    const png = await getImage(d);
+    const bpng = Base64.encode(png);
+    const dimg = "data:image/png;base64," + bpng;
+    //console.log(dimg);
+    await fetchJSON("/save/" + idx + ".png", bpng);
+    plane2.setAttribute("src", dimg);
+  } else {
+    plane2.setAttribute("src", "data/" + idx + ".png");
+  }
+  return [plane, plane2];
 };
