@@ -52,7 +52,7 @@ export const getCreator = async (idx, x, y, z, rx, ry, rz, parent, maketext) => 
   plane.setAttribute("src", d.メイン写真);
   plane.data = d;
 
-  const scale = 0.8;
+  const scale = 0.5;
   plane.setAttribute("scale", { x: scale, y: scale, z: scale });
 
   const plane2 = create("a-plane", parent);

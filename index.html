@@ -14,6 +14,8 @@ const maketextimg = false; // if true, run with make_textimg_server.js
 const len = getCreatorLength();
 console.log(len);
 const plates = [];
+const r = 2.5;
+const hw = .5;
 for (let i = 0; i < len; i++) {
   /*
   const x = Math.random() * 10 - 5;
@@ -21,8 +23,7 @@ for (let i = 0; i < len; i++) {
   const r = (i - 1) * 30;
   getCreator(i, x, 1.5, z, 0, r, 0, scene);
   */
-  const r = 4;
-  const y = 1.5 + (i % 4) * .8;
+  const y = 1.5 + (i % 4) * hw;
   const th = Math.floor(i / 4) * Math.PI * 2 / 25;
   const x = Math.cos(th) * r;
   const z = Math.sin(th) * r;
@@ -36,8 +37,7 @@ setInterval(() => {
     const p = plates[i];
     const ny = i % 4;
     p.th += 0.0005 * (ny - 1.5);
-    const r = 4;
-    const y = 1.5 + ny * .8;
+    const y = 1.5 + ny * hw;
     const th = p.th;
     const x = Math.cos(th) * r;
     const z = Math.sin(th) * r;
